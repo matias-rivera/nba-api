@@ -1,26 +1,51 @@
 import React from 'react';
-import logo from './logo.svg';
+import axios from 'axios';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+ class App extends React.Component {
+   state = { 
+     first_name:'',
+     last_name:'',
+     team:{}
+    }
 
-export default App;
+    componentDidMount(){
+      
+      this.fetchPlayer();
+    };
+    
+    fetchPlayer = () => {
+      const id =this.rand(1,3000);
+      axios.get('https://www.balldontlie.io/api/v1/players/'+id)
+        .then((response) => {
+          const { first_name,last_name,team } = response.data;
+        
+          this.setState({first_name,last_name,team });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    rand = (min, max) => {  
+      let randomNum = Math.random() * (max - min) + min;  
+      return Math.floor(randomNum);}
+  
+    render() {
+      const {first_name, last_name,team} = this.state;
+      return (
+        <div className="App">
+          <div className="card">
+            <h1 className="heading">{first_name} {last_name} </h1>
+            <h2 className="heading">{team.full_name} </h2>
+            <button className="button" onClick={this.fetchPlayer}>
+              <span>RANDOM PLAYER</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+ }
+  
+ export default App;
